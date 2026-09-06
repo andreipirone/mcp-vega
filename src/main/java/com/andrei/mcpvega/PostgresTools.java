@@ -4,6 +4,7 @@ import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,7 +43,11 @@ public class PostgresTools {
     }
 
     @McpTool(name="query-database", description = "Executes a validated, read-only SQL query against the target database to fetch tabular data, compute aggregates, or inspect table definitions.")
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> queryDatabase(@McpToolParam(description = "A valid read-only SQL query (SELECT statement). Do not include destructive statements (INSERT, UPDATE, DELETE, DROP). Include appropriate WHERE clauses and a LIMIT of 2.") String query){
+
+        jdbcClient.sql("SET TRANSACTION READ ONLY").update();
+
         return jdbcClient.sql(query).query().listOfRows();
     }
 
