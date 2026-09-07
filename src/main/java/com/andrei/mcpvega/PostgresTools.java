@@ -44,7 +44,9 @@ public class PostgresTools {
 
     @McpTool(name="query-database", description = "Executes a validated, read-only SQL query against the target database to fetch tabular data, compute aggregates, or inspect table definitions.")
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> queryDatabase(@McpToolParam(description = "A valid read-only SQL query (SELECT statement). Do not include destructive statements (INSERT, UPDATE, DELETE, DROP). Include appropriate WHERE clauses and a LIMIT of 2.") String query){
+    public List<Map<String, Object>> queryDatabase(@McpToolParam(description = "A valid read-only SQL query (SELECT statement). Do not include destructive statements (INSERT, UPDATE, DELETE, DROP). Include appropriate WHERE clauses.") String query){
+
+        SqlValidator.readOnlyValidator(query);
 
         jdbcClient.sql("SET TRANSACTION READ ONLY").update();
 
