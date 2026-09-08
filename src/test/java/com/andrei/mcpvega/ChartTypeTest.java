@@ -1,5 +1,7 @@
-package com.andrei.mcpvega.model;
+package com.andrei.mcpvega;
 
+import com.andrei.mcpvega.model.ChartType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -12,7 +14,7 @@ class ChartTypeTest {
 
     @Test
     void parsesExactKey() {
-        assertEquals(Optional.of(ChartType.BAR), ChartType.fromKey("bar"));
+        Assertions.assertEquals(Optional.of(ChartType.BAR), ChartType.fromKey("bar"));
         assertEquals(Optional.of(ChartType.LINE), ChartType.fromKey("line"));
         assertEquals(Optional.of(ChartType.PIE), ChartType.fromKey("pie"));
     }

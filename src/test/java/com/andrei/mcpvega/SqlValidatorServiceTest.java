@@ -1,6 +1,7 @@
-package com.andrei.mcpvega.service;
+package com.andrei.mcpvega;
 
 import com.andrei.mcpvega.exception.InvalidSqlQueryException;
+import com.andrei.mcpvega.service.SqlValidatorService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
