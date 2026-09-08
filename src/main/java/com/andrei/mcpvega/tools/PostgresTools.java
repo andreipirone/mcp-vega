@@ -1,5 +1,6 @@
 package com.andrei.mcpvega.tools;
 
+import com.andrei.mcpvega.exception.ToolValidationException;
 import com.andrei.mcpvega.service.SqlValidatorService;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
@@ -7,14 +8,16 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 public class PostgresTools {
+    private static final Pattern TABLE_NAME_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
+
     private final JdbcClient jdbcClient;
     private final SqlValidatorService sqlValidatorService;
 
@@ -39,6 +42,10 @@ public class PostgresTools {
 
     @McpTool(name="describe-table", description = "Retrieve column names and data types for a given table name")
     public List<Map<String, Object>> describeTable(@McpToolParam(description = "The name of the table to describe, e.g., 'users'") String tableName){
+        if (tableName == null || !TABLE_NAME_PATTERN.matcher(tableName).matches()) {
+            throw new ToolValidationException("Invalid table name: '" + tableName + "'. Must match " + TABLE_NAME_PATTERN.pattern());
+        }
+
         String sql = """
                 SELECT column_name, data_type, is_nullable
                 FROM information_schema.columns
@@ -67,8 +74,6 @@ public class PostgresTools {
     public List<Map<String, Object>> queryDatabase(@McpToolParam(description = "A valid read-only SQL query (SELECT statement). Do not include destructive statements (INSERT, UPDATE, DELETE, DROP). Include appropriate WHERE clauses.") String query){
 
         sqlValidatorService.readOnlyValidator(query);
-
-        jdbcClient.sql("SET TRANSACTION READ ONLY").update();
 
         return jdbcClient.sql(query).query().listOfRows();
     }
