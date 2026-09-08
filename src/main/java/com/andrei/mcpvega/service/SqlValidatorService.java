@@ -1,16 +1,15 @@
-package com.andrei.mcpvega;
+package com.andrei.mcpvega.service;
 
-import net.sf.jsqlparser.parser.CCJSqlParser;
+import com.andrei.mcpvega.exception.InvalidSqlQueryException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.Statements;
 import net.sf.jsqlparser.statement.select.Select;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
+@Service
+public class SqlValidatorService {
 
-public class SqlValidator {
-
-    public static void readOnlyValidator(String query){
+    public void readOnlyValidator(String query){
         try {
             Statement statement = CCJSqlParserUtil.parse(query);
 

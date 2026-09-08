@@ -1,4 +1,4 @@
-package com.andrei.mcpvega;
+package com.andrei.mcpvega.service;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;

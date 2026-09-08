@@ -1,5 +1,6 @@
-package com.andrei.mcpvega;
+package com.andrei.mcpvega.tools;
 
+import com.andrei.mcpvega.service.SqlValidatorService;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -7,15 +8,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class PostgresTools {
     private final JdbcClient jdbcClient;
+    private final SqlValidatorService sqlValidatorService;
 
-    public PostgresTools(JdbcClient jdbcClient) {
+    public PostgresTools(JdbcClient jdbcClient, SqlValidatorService sqlValidatorService) {
         this.jdbcClient = jdbcClient;
+        this.sqlValidatorService = sqlValidatorService;
     }
 
     @McpTool(name="list-all-tables", description = "List all public tables and their row counts in the PostgreSQL database")
@@ -61,16 +66,19 @@ public class PostgresTools {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> queryDatabase(@McpToolParam(description = "A valid read-only SQL query (SELECT statement). Do not include destructive statements (INSERT, UPDATE, DELETE, DROP). Include appropriate WHERE clauses.") String query){
 
-        SqlValidator.readOnlyValidator(query);
+        sqlValidatorService.readOnlyValidator(query);
 
         jdbcClient.sql("SET TRANSACTION READ ONLY").update();
 
         return jdbcClient.sql(query).query().listOfRows();
     }
 
-    @McpTool(name="get-current-date", description = "It gets the current date.")
-    public String getTodoItems() {
-       return LocalDate.now().toString();
+    @McpTool(name="get-current-date-time", description = "It gets the current date and time.")
+    public String getCurrentDateTime() {
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        return dateTime.format(dateTimeFormatter);
     }
 
 

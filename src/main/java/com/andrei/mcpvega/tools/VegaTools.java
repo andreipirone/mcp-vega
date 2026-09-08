@@ -1,5 +1,6 @@
-package com.andrei.mcpvega;
+package com.andrei.mcpvega.tools;
 
+import com.andrei.mcpvega.service.VegaTemplateService;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;

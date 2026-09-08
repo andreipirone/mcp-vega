@@ -1,4 +1,4 @@
-package com.andrei.mcpvega;
+package com.andrei.mcpvega.exception;
 
 public class InvalidSqlQueryException extends RuntimeException {
     public InvalidSqlQueryException(String message) {
