@@ -7,7 +7,8 @@
 [![Spring AI](https://img.shields.io/badge/Spring%20AI-2.0.1-6DB33F?logo=spring&logoColor=white)](https://spring.io/projects/spring-ai)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
----
+
+
 
 ## Overview
 
@@ -19,7 +20,6 @@
 - **Transaction-Level Safety:** Executes all queries within a read-only transactional boundary (`@Transactional(readOnly = true)`).
 - **Hard Row Limits:** Enforces a hard cap of 50 rows per query, nudging LLMs toward aggregate bucketing, percentiles, and top-N ranking.
 
----
 
 ## Tools Reference
 
@@ -39,7 +39,6 @@
 | `list-available-chart-formats` | *None* | Lists supported chart templates (`bar`, `line`, `pie`, `area`, `histogram`, `scatterplot`). | `List<String>` |
 | `generate-vega-lite-chart` | `type` (`String`), `data` (`String`) | Injects dataset into a canonical Vega-Lite v6 template and returns the render prompt. | `String` (Vega-Lite spec) |
 
----
 
 ## Prerequisites
 
@@ -132,11 +131,8 @@ java -jar target/mcpvega-0.0.1-SNAPSHOT.jar
 
 ```
 
----
 
 ## Screenshots
-
-Real outputs produced by MCP Vega driving a chat client against a PostgreSQL backend. The LLM autonomously chains the introspection tools (`list-all-tables` → `describe-table` → `query-database` → `generate-vega-lite-chart`) and renders the resulting Vega-Lite spec inline.
 
 ### Bar chart — monthly sales revenue
 <p align="center">
@@ -158,7 +154,6 @@ Real outputs produced by MCP Vega driving a chat client against a PostgreSQL bac
   <img src="docs/images/img4.png" alt="Scatter plot of property surface area vs. sale price" width="720">
 </p>
 
----
 
 ## Connecting to AI Clients
 
