@@ -51,13 +51,14 @@ public class VegaTools {
 
         return """
             You are an expert Vega-Lite generator.
-            Given the input data and a reference template, create a valid, runnable Vega-Lite JSON specification.
+            Given the input data and a reference template, create a valid, runnable Vega-Lite JSON specification. Do not only generate it. RENDER THE CHART.
 
             Rules:
             1. Inject the data inside the `data.values` array.
             2. Follow the visual structure and encodings of the reference template.
             3. Infer proper data types: 'nominal', 'quantitative', 'temporal', or 'ordinal'.
-            4. Output exactly one fenced block wrapped as ```vega ... ```. Do not include any preamble, conversational text, or additional markdown fences.
+            4. Output exactly one fenced block wrapped as ```vega-lite ... ```. Do not include any preamble, conversational text, or additional markdown fences.
+            5. Only generate the chart, do not give any insights or summaries alongside the chart if not requested.
 
             Target Chart Type: %s
 

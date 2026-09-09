@@ -6,7 +6,11 @@ import java.util.Optional;
 public enum ChartType {
     BAR("bar"),
     LINE("line"),
-    PIE("pie");
+    PIE("pie"),
+    AREA("area"),
+    HISTOGRAM("histogram"),
+    SCATTER_PLOT("scatter_plot");
+
 
     private final String key;
 
