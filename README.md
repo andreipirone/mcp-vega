@@ -134,6 +134,63 @@ java -jar target/mcpvega-0.0.1-SNAPSHOT.jar
 
 ---
 
+## Docker
+
+> The repository does **not** ship an `application.properties` — it is git-ignored to keep credentials out of source control. You must create your own before starting the container.
+
+### 1. Build the image
+
+```bash
+docker build -t mcp-vega:latest .
+```
+
+### 2. Create the configuration file
+
+Save the following as `src/main/resources/application.properties` (the standard Spring Boot config location):
+
+```properties
+server.port=8080
+
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://host.docker.internal:5432/analytics}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:mcp_reader}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:strong_password}
+
+spring.ai.mcp.server.name=vega-mcp
+spring.ai.mcp.server.version=1.0.0
+spring.ai.mcp.server.protocol=STREAMABLE
+spring.ai.mcp.server.stdio=false
+```
+
+### 3. Run the container
+
+The boot jar is built with `src/main/resources/` on the classpath, so any `application.properties` you have locally is **baked into the image**. You only need environment variables for the values you want to override (typically just the PostgreSQL credentials):
+
+```bash
+docker run --rm -d \
+  --name mcp-vega \
+  -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/analytics \
+  -e SPRING_DATASOURCE_USERNAME=mcp_reader \
+  -e SPRING_DATASOURCE_PASSWORD=strong_password \
+  mcp-vega:latest
+```
+
+If you ever want to reconfigure a running container without rebuilding the image, mount a properties file at `/app/application.properties` — it overrides the one bundled in the jar:
+
+```bash
+docker run --rm -d \
+  --name mcp-vega \
+  -p 8080:8080 \
+  -v "$(pwd)/src/main/resources/application.properties:/app/application.properties:ro" \
+  mcp-vega:latest
+```
+
+Your MCP client can then target `http://localhost:8080` with `transport: streamable-http` — see the client configs above.
+
+> **stdio transport:** not recommended in Docker — keeping stdin/stdout attached to a parent MCP client process is fragile. Stick with the streamable-HTTP transport shown above.
+
+---
+
 ## Screenshots
 
 Real outputs produced by MCP Vega driving a chat client against a PostgreSQL backend. The LLM autonomously chains the introspection tools (`list-all-tables` → `describe-table` → `query-database` → `generate-vega-lite-chart`) and renders the resulting Vega-Lite spec inline.
@@ -163,6 +220,34 @@ Real outputs produced by MCP Vega driving a chat client against a PostgreSQL bac
 ## Connecting to AI Clients
 
 Once the server is running on `http://localhost:8080` (streamable-HTTP transport), point any MCP-compatible client at it. Below are configs for the most popular clients.
+
+### Open Web UI
+
+[Open Web UI](https://github.com/open-webui/open-webui) talks to MCP servers over the streamable-HTTP transport, so you only need the server running locally — no stdio plumbing or extra flags.
+
+1. Make sure the server is up on `http://localhost:8080` (the default `STREAMABLE` config from `application.properties` is enough — do **not** activate the `stdio` profile here).
+
+2. Open **Settings → Integrations → External Tool Servers**, and add a new MCP server:
+   - **Name:** `vega-mcp`
+   - **URL:** `http://localhost:8080`
+   - **Transport:** `streamable-http`
+
+3. Alternatively, edit the Open Web UI data volume's `config.json` (`~/.open-webui/data/config.json` in the default Docker setup) and add:
+
+```json
+{
+  "mcp_servers": {
+    "vega-mcp": {
+      "url": "http://localhost:8080",
+      "transport": "streamable-http"
+    }
+  }
+}
+```
+
+4. Restart Open Web UI (if you edited `config.json`) and start a new chat. The Vega MCP tools (`list-all-tables`, `describe-table`, `query-database`, `generate-vega-lite-chart`, …) should appear in the tool picker.
+
+> **Tip:** if you exposed the Spring Boot app on a different host/port (or behind a reverse proxy with TLS), replace `http://localhost:8080` with the reachable endpoint and make sure the URL is reachable from the container/host running Open Web UI.
 
 ### Claude Desktop
 
