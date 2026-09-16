@@ -12,7 +12,7 @@
 
 ## Overview
 
-**MCP Vega** bridges MCP-aware AI clients (Claude Desktop, Cursor, Continue, autonomous agents) with your PostgreSQL database. It provides an opinionated, read-only toolchain for answering analytical questions and returning immediate, structured charts without exposing data to mutation or exfiltration risks.
+**MCP Vega** bridges MCP-aware AI clients (Open Web UI, Claude Desktop, Cursor, Continue, autonomous agents) with your PostgreSQL database. It provides an opinionated, read-only toolchain for answering analytical questions and returning immediate, structured charts without exposing data to mutation or exfiltration risks.
 
 ### Key Guardrails
 
